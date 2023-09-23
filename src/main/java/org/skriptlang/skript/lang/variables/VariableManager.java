@@ -2,6 +2,7 @@ package org.skriptlang.skript.lang.variables;
 
 import ch.njol.skript.Skript;
 import org.jetbrains.annotations.NotNull;
+import org.skriptlang.skript.lang.variables.container.VariableContainer;
 import org.skriptlang.skript.lang.variables.storage.VariableStorage;
 
 /**

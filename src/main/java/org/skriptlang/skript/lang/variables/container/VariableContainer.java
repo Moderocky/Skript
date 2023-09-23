@@ -1,4 +1,8 @@
-package org.skriptlang.skript.lang.variables;
+package org.skriptlang.skript.lang.variables.container;
+
+import org.skriptlang.skript.lang.variables.Variable;
+import org.skriptlang.skript.lang.variables.VariableHolder;
+import org.skriptlang.skript.lang.variables.VariablePath;
 
 /**
  * Represents a single variable storage
