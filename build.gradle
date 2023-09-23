@@ -21,6 +21,7 @@ allprojects {
 		maven { url 'https://oss.sonatype.org/content/repositories/snapshots/' }
 		maven { url 'https://repo.papermc.io/repository/maven-public/' }
 		maven { url 'https://ci.emc.gs/nexus/content/groups/aikar/' }
+		maven { url 'https://repo.kenzie.mx/releases/' }
 	}
 }
 
@@ -28,6 +29,7 @@ dependencies {
 	shadow group: 'io.papermc', name: 'paperlib', version: '1.0.8'
 	shadow group: 'org.bstats', name: 'bstats-bukkit', version: '3.0.2'
 	shadow group: 'net.kyori', name: 'adventure-text-serializer-bungeecord', version: '4.3.0'
+	shadow group: 'mx.kenzie', name: 'clockwork', version: '1.0.0'
 
 	implementation group: 'io.papermc.paper', name: 'paper-api', version: '1.20.1-R0.1-SNAPSHOT'
 	implementation group: 'org.eclipse.jdt', name: 'org.eclipse.jdt.annotation', version: '2.2.700'
@@ -239,7 +241,7 @@ void createTestTask(String name, String desc, String environments, int javaVersi
 			if (!gradle.taskGraph.hasTask(":tasks") && !gradle.startParameter.dryRun && modifiers.contains(Modifiers.PROFILE)) {
 				if (!project.hasProperty('profiler'))
 					throw new MissingPropertyException('Add parameter -Pprofiler=<path to profiler>', 'profiler', String.class)
-	
+
 				args += '-agentpath:' + project.property('profiler') + '=port=8849,nowait'
 			}
 		}
@@ -389,7 +391,7 @@ task nightlyRelease(type: ShadowJar) {
 
 javadoc {
 	dependsOn nightlyResources
-	
+
 	source = sourceSets.main.allJava
 
 	exclude("ch/njol/skript/conditions/**")
@@ -402,7 +404,7 @@ javadoc {
 	exclude("ch/njol/skript/lang/function/ExprFunctionCall.java")
 	exclude("ch/njol/skript/hooks/**")
 	exclude("ch/njol/skript/test/**")
-	
+
 	classpath = configurations.compileClasspath + sourceSets.main.output
 	options.encoding = 'UTF-8'
 	// currently our javadoc has a lot of errors, so we need to suppress the linter
