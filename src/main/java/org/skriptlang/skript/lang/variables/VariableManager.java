@@ -2,6 +2,7 @@ package org.skriptlang.skript.lang.variables;
 
 import ch.njol.skript.Skript;
 import org.jetbrains.annotations.NotNull;
+import org.skriptlang.skript.lang.context.Context;
 import org.skriptlang.skript.lang.variables.container.VariableContainer;
 import org.skriptlang.skript.lang.variables.storage.VariableStorage;
 
@@ -27,7 +28,7 @@ public class VariableManager implements VariableHolder {
 		if (phase.stage > 0) {
 			Skript.error("'" + storage.getProvider()
 				.getName() + "' attempted to register variable storage mode after initialisation.");
-        }
+		}
 		// todo
 	}
 	
@@ -39,26 +40,26 @@ public class VariableManager implements VariableHolder {
 	 * @param path    the path of the variable
 	 * @return the container responsible for holding this variable
 	 */
-	protected VariableContainer getContainer(@Deprecated Object context, VariablePath path) { // todo need context from walrus
+	protected VariableContainer getContainer(Context<?> context, VariablePath path) { // todo need context from walrus
 		// todo
 		return null;
 	}
 	
 	@Override
-	public <Value> void setVariable(@Deprecated Object context, VariablePath path, Value value) {
+	public <Value> void setVariable(Context<?> context, VariablePath path, Value value) {
 		// todo we can shortcut this later
 		VariableContainer container = this.getContainer(context, path);
 		container.setVariable(path, value);
 	}
 	
 	@Override
-	public <Value> Value getVariable(Object context, VariablePath path) {
+	public <Value> Value getVariable(Context<?> context, VariablePath path) {
 		VariableContainer container = this.getContainer(context, path);
 		return container.getVariable(path);
 	}
 	
 	@Override
-	public <Value> Variable<Value> getVariableHandle(Object context, VariablePath path) {
+	public <Value> Variable<Value> getVariableHandle(Context<?> context, VariablePath path) {
 		VariableContainer container = this.getContainer(context, path);
 		return container.getVariableHandle(path);
 	}

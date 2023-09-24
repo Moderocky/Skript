@@ -1,6 +1,5 @@
 package org.skriptlang.skript.lang.variables.container;
 
-import mx.kenzie.clockwork.collection.ReferenceMap;
 import org.skriptlang.skript.lang.variables.Variable;
 import org.skriptlang.skript.lang.variables.VariablePath;
 import org.skriptlang.skript.lang.variables.cache.LazyVariableMap;

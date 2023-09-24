@@ -1,5 +1,7 @@
 package org.skriptlang.skript.lang.variables;
 
+import org.skriptlang.skript.lang.context.Context;
+
 /**
  * Something that contains or can refer to variables.
  *
@@ -18,7 +20,7 @@ public interface VariableHolder {
 	 * @param value   the new variable value
 	 * @param <Value> the value type
 	 */
-	<Value> void setVariable(@Deprecated Object context, VariablePath path, Value value);
+	<Value> void setVariable(Context<?> context, VariablePath path, Value value);
 	
 	/**
 	 * Gets the handle reference to a variable.
@@ -28,7 +30,7 @@ public interface VariableHolder {
 	 * @param <Value> the value type
 	 * @return the current variable value
 	 */
-	<Value> Variable<Value> getVariableHandle(@Deprecated Object context, VariablePath path);
+	<Value> Variable<Value> getVariableHandle(Context<?> context, VariablePath path);
 	
 	/**
 	 * Gets the value of a variable.
@@ -38,7 +40,7 @@ public interface VariableHolder {
 	 * @param <Value> the value type
 	 * @return the current variable value
 	 */
-	default <Value> Value getVariable(@Deprecated Object context, VariablePath path) {
+	default <Value> Value getVariable(Context<?> context, VariablePath path) {
 		return this.<Value>getVariableHandle(context, path).get();
 	}
 	

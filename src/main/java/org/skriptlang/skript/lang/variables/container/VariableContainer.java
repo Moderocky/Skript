@@ -1,5 +1,6 @@
 package org.skriptlang.skript.lang.variables.container;
 
+import org.skriptlang.skript.lang.context.Context;
 import org.skriptlang.skript.lang.variables.Variable;
 import org.skriptlang.skript.lang.variables.VariableHolder;
 import org.skriptlang.skript.lang.variables.VariablePath;
@@ -20,17 +21,17 @@ public interface VariableContainer extends VariableHolder {
 	<Value> Variable<Value> getVariableHandle(VariablePath path);
 	
 	@Override
-	default <Value> void setVariable(Object context, VariablePath path, Value value) {
+	default <Value> void setVariable(Context<?> context, VariablePath path, Value value) {
 		this.setVariable(path, value);
 	}
 	
 	@Override
-	default <Value> Value getVariable(Object context, VariablePath path) {
+	default <Value> Value getVariable(Context<?> context, VariablePath path) {
 		return this.getVariable(path);
 	}
 	
 	@Override
-	default <Value> Variable<Value> getVariableHandle(Object context, VariablePath path) {
+	default <Value> Variable<Value> getVariableHandle(Context<?> context, VariablePath path) {
 		return this.getVariableHandle(path);
 	}
 	
