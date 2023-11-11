@@ -22,6 +22,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Modifier;
 import java.util.Arrays;
 
 /**
@@ -56,15 +57,13 @@ public class SyntaxElementInfo<E extends SyntaxElement> {
 			this.checkConstructor();
 	}
 	
-	@SuppressWarnings("deprecation")
 	private void checkConstructor() {
 		if (constructor != null)
 			return;
 		try {
 			this.constructor = type.getConstructor();
-			// the deprecated 'isAccessible' still does what we want, it's just poorly-named
-			if (!constructor.isAccessible() || !constructor.canAccess(this))
-				throw new Error("The nullary constructor of class " + type.getName() + " is not public or accessible");
+			if (!Modifier.isPublic(constructor.getModifiers()))
+				throw new Error("The nullary constructor of class " + type.getName() + " is not public");
 		} catch (final NoSuchMethodException e) {
 			// throwing an Exception throws an (empty) ExceptionInInitializerError instead, thus an Error is used
 			throw new Error(type + " does not have a public nullary constructor", e);
