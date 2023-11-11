@@ -109,7 +109,7 @@ public abstract class EntityData<E extends Entity> implements SyntaxElement, Ygg
 			if (info == null)
 				throw new StreamCorruptedException("Invalid EntityData code name " + codeName);
 			try {
-				final EntityData<?> d = info.type.newInstance();
+				final EntityData<?> d = info.create();
 				d.deserialize(fields);
 				return d;
 			} catch (final InstantiationException e) {
@@ -134,7 +134,7 @@ public abstract class EntityData<E extends Entity> implements SyntaxElement, Ygg
 				return null;
 			EntityData<?> d;
 			try {
-				d = i.type.newInstance();
+				d = i.create();
 			} catch (final Exception e) {
 				Skript.exception(e, "Can't create an instance of " + i.type.getCanonicalName());
 				return null;
@@ -532,7 +532,7 @@ public abstract class EntityData<E extends Entity> implements SyntaxElement, Ygg
 			if (info.entityClass != Entity.class && (e == null ? info.entityClass.isAssignableFrom(c) : info.entityClass.isInstance(e))) {
 				try {
 					@SuppressWarnings("unchecked")
-					final EntityData<E> d = (EntityData<E>) info.type.newInstance();
+					final EntityData<E> d = (EntityData<E>) info.create();
 					if (d.init(c, e))
 						return d;
 				} catch (final Exception ex) {
