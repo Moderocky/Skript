@@ -109,7 +109,7 @@ public abstract class EntityData<E extends Entity> implements SyntaxElement, Ygg
 			if (info == null)
 				throw new StreamCorruptedException("Invalid EntityData code name " + codeName);
 			try {
-				final EntityData<?> d = info.c.newInstance();
+				final EntityData<?> d = info.type.newInstance();
 				d.deserialize(fields);
 				return d;
 			} catch (final InstantiationException e) {
@@ -134,9 +134,9 @@ public abstract class EntityData<E extends Entity> implements SyntaxElement, Ygg
 				return null;
 			EntityData<?> d;
 			try {
-				d = i.c.newInstance();
+				d = i.type.newInstance();
 			} catch (final Exception e) {
-				Skript.exception(e, "Can't create an instance of " + i.c.getCanonicalName());
+				Skript.exception(e, "Can't create an instance of " + i.type.getCanonicalName());
 				return null;
 			}
 			if (!d.deserialize(split[1]))
@@ -273,7 +273,7 @@ public abstract class EntityData<E extends Entity> implements SyntaxElement, Ygg
 	
 	public EntityData() {
 		for (final EntityDataInfo<?> i : infos) {
-			if (getClass() == i.c) {
+			if (getClass() == i.type) {
 				info = i;
 				matchedPattern = i.defaultName;
 				return;
@@ -312,7 +312,7 @@ public abstract class EntityData<E extends Entity> implements SyntaxElement, Ygg
 	
 	/**
 	 * Returns the super type of this entity data, e.g. 'wolf' for 'angry wolf'.
-	 * 
+	 *
 	 * @return The supertype of this entity data. Must not be null.
 	 */
 	public abstract EntityData getSuperType();
@@ -384,7 +384,7 @@ public abstract class EntityData<E extends Entity> implements SyntaxElement, Ygg
 	
 	public static EntityDataInfo<?> getInfo(final Class<? extends EntityData<?>> c) {
 		for (final EntityDataInfo<?> i : infos) {
-			if (i.c == c)
+			if (i.type == c)
 				return i;
 		}
 		throw new SkriptAPIException("Unregistered EntityData class " + c.getName());
@@ -401,7 +401,7 @@ public abstract class EntityData<E extends Entity> implements SyntaxElement, Ygg
 
 	/**
 	 * Prints errors.
-	 * 
+	 *
 	 * @param s String with optional indefinite article at the beginning
 	 * @return The parsed entity data
 	 */
@@ -416,7 +416,7 @@ public abstract class EntityData<E extends Entity> implements SyntaxElement, Ygg
 	
 	/**
 	 * Prints errors.
-	 * 
+	 *
 	 * @param s
 	 * @return The parsed entity data
 	 */
@@ -532,7 +532,7 @@ public abstract class EntityData<E extends Entity> implements SyntaxElement, Ygg
 			if (info.entityClass != Entity.class && (e == null ? info.entityClass.isAssignableFrom(c) : info.entityClass.isInstance(e))) {
 				try {
 					@SuppressWarnings("unchecked")
-					final EntityData<E> d = (EntityData<E>) info.c.newInstance();
+					final EntityData<E> d = (EntityData<E>) info.type.newInstance();
 					if (d.init(c, e))
 						return d;
 				} catch (final Exception ex) {

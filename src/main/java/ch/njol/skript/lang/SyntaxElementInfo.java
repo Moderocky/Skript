@@ -18,6 +18,7 @@
  */
 package ch.njol.skript.lang;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.Arrays;
 
 /**
@@ -26,23 +27,33 @@ import java.util.Arrays;
  */
 public class SyntaxElementInfo<E extends SyntaxElement> {
 	
+	public final Class<E> type;
 	public final Class<E> c;
 	public final String[] patterns;
 	public final String originClassPath;
 	
-	public SyntaxElementInfo(final String[] patterns, final Class<E> c, final String originClassPath) throws IllegalArgumentException {
+	public SyntaxElementInfo(final String[] patterns, final Class<E> type, final String originClassPath) throws IllegalArgumentException {
 		this.patterns = patterns;
-		this.c = c;
+		this.type = c = type;
 		this.originClassPath = originClassPath;
 		try {
-			c.getConstructor();
+			type.getConstructor();
 //			if (!c.getDeclaredConstructor().isAccessible())
 //				throw new IllegalArgumentException("The nullary constructor of class "+c.getName()+" is not public");
 		} catch (final NoSuchMethodException e) {
 			// throwing an Exception throws an (empty) ExceptionInInitializerError instead, thus an Error is used
-			throw new Error(c + " does not have a public nullary constructor", e);
+			throw new Error(type + " does not have a public nullary constructor", e);
 		} catch (final SecurityException e) {
 			throw new IllegalStateException("Skript cannot run properly because a security manager is blocking it!");
+		}
+	}
+	
+	public E create()
+		throws InstantiationException, IllegalAccessException {
+		try {
+			return type.getConstructor().newInstance();
+		} catch (NoSuchMethodException | InvocationTargetException ex) {
+			throw new RuntimeException(ex);
 		}
 	}
 	
@@ -51,7 +62,7 @@ public class SyntaxElementInfo<E extends SyntaxElement> {
 	 * @return The Class of the element
 	 */
 	public Class<E> getElementClass() {
-		return c;
+		return type;
 	}
 	
 	/**
