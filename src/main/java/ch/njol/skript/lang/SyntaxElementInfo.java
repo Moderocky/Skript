@@ -18,6 +18,9 @@
  */
 package ch.njol.skript.lang;
 
+import org.jetbrains.annotations.Nullable;
+
+import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Arrays;
 
@@ -28,18 +31,40 @@ import java.util.Arrays;
 public class SyntaxElementInfo<E extends SyntaxElement> {
 	
 	public final Class<E> type;
-	public final Class<E> c;
+	public final @Deprecated(forRemoval = true) Class<E> c; // replaced by the 'type' field
 	public final String[] patterns;
 	public final String originClassPath;
+	private @Nullable Constructor<E> constructor;
 	
-	public SyntaxElementInfo(final String[] patterns, final Class<E> type, final String originClassPath) throws IllegalArgumentException {
+	public SyntaxElementInfo(final String[] patterns, final Class<E> type, final String originClassPath)
+		throws IllegalArgumentException {
+		this(patterns, type, originClassPath, true);
+	}
+	
+	/**
+	 * An alternative constructor for third-party addons that wish to create non-standard syntax,
+	 * specifically where the constructor may not meet the requirements (or may not be used at all).
+	 *
+	 * In this case, the {@link SyntaxElementInfo#create()} method should be overridden.
+     */
+	protected SyntaxElementInfo(final String[] patterns, final Class<E> type, final String originClassPath, boolean checkConstructor)
+		throws IllegalArgumentException {
 		this.patterns = patterns;
 		this.type = c = type;
 		this.originClassPath = originClassPath;
+		if (checkConstructor)
+			this.checkConstructor();
+	}
+	
+	@SuppressWarnings("deprecation")
+	private void checkConstructor() {
+		if (constructor != null)
+			return;
 		try {
-			type.getConstructor();
-//			if (!c.getDeclaredConstructor().isAccessible())
-//				throw new IllegalArgumentException("The nullary constructor of class "+c.getName()+" is not public");
+			this.constructor = type.getConstructor();
+			// the deprecated 'isAccessible' still does what we want, it's just poorly-named
+			if (!constructor.isAccessible() || !constructor.canAccess(this))
+				throw new Error("The nullary constructor of class " + type.getName() + " is not public or accessible");
 		} catch (final NoSuchMethodException e) {
 			// throwing an Exception throws an (empty) ExceptionInInitializerError instead, thus an Error is used
 			throw new Error(type + " does not have a public nullary constructor", e);
@@ -50,10 +75,15 @@ public class SyntaxElementInfo<E extends SyntaxElement> {
 	
 	public E create()
 		throws InstantiationException, IllegalAccessException {
+		this.checkConstructor();
+		assert constructor != null;
 		try {
-			return type.getConstructor().newInstance();
-		} catch (NoSuchMethodException | InvocationTargetException ex) {
-			throw new RuntimeException(ex);
+			return constructor.newInstance();
+		} catch (InvocationTargetException ex) {
+			throw new RuntimeException("Unable to create " + type.getName() + " instance", ex);
+		} catch (IllegalAccessException ex) {
+			// this should never occur since we checked it was accessible to us
+			throw new Error(ex);
 		}
 	}
 	
@@ -80,4 +110,5 @@ public class SyntaxElementInfo<E extends SyntaxElement> {
 	public String getOriginClassPath() {
 		return originClassPath;
 	}
+	
 }
